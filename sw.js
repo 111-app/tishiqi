@@ -1,11 +1,11 @@
 // 提示气 - Service Worker
-const CACHE_NAME = 'tishiqi-v1';
+const CACHE_NAME = 'tishiqi-v2';
 const ASSETS = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/app.js',
-    '/manifest.json',
+    '/tishiqi/',
+    '/tishiqi/index.html',
+    '/tishiqi/style.css',
+    '/tishiqi/app.js',
+    '/tishiqi/manifest.json',
 ];
 
 // 安装：缓存静态资源
@@ -39,7 +39,7 @@ self.addEventListener('fetch', (event) => {
                 return response;
             });
         }).catch(() => {
-            return caches.match('/index.html');
+            return caches.match('/tishiqi/index.html');
         })
     );
 });

@@ -2,7 +2,7 @@
     "name": "提示气",
     "short_name": "提示气",
     "description": "你的贴心提醒小助手",
-    "start_url": "/",
+    "start_url": "/tishiqi/",
     "display": "standalone",
     "orientation": "portrait",
     "theme_color": "#4F46E5",
