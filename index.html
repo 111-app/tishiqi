@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4F46E5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>提示气</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏰</text></svg>">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 顶部标题栏 -->
+        <header class="header">
+            <h1>⏰ 提示气</h1>
+            <p class="subtitle">你的贴心提醒小助手</p>
+        </header>
+
+        <!-- 通知权限提示 -->
+        <div id="perm-banner" class="perm-banner hidden">
+            <span id="perm-text">🔔 请开启通知权限，才能收到提醒</span>
+            <button id="btn-enable-notif" class="btn-small">开启</button>
+        </div>
+
+        <!-- 通知设置指引（权限请求失败或不可用时显示） -->
+        <div id="notif-guide" class="notif-guide hidden">
+            <p class="guide-title">🔔 通知未开启，请按以下步骤手动打开：</p>
+            <ol class="guide-steps">
+                <li>用 Chrome 浏览器打开本页面</li>
+                <li>点击菜单「⋮」→「添加到主屏幕」</li>
+                <li>打开手机「设置」→「应用管理」→ 找到本应用 →「通知」→ 开启</li>
+            </ol>
+            <button id="btn-dismiss-guide" class="btn-small guide-dismiss">我知道了</button>
+        </div>
+
+        <!-- 提醒列表 -->
+        <div class="section">
+            <div class="section-header">
+                <h2>我的提醒</h2>
+                <span id="reminder-count" class="badge">0</span>
+            </div>
+            <div id="reminder-list" class="reminder-list">
+                <div class="empty-state">
+                    <p>📋 还没有提醒</p>
+                    <p class="empty-hint">点击下方按钮添加你的第一个提醒</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 添加按钮 -->
+        <button id="btn-add" class="fab" title="添加提醒">＋</button>
+
+        <!-- 底部状态栏 -->
+        <footer class="footer">
+            <span id="status-text">⏳ 检查中...</span>
+        </footer>
+    </div>
+
+    <!-- 添加/编辑弹窗 -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">添加提醒</h3>
+                <button id="modal-close" class="modal-close">✕</button>
+            </div>
+            <form id="reminder-form" class="modal-body">
+                <input type="hidden" id="edit-id">
+
+                <div class="form-group">
+                    <label for="input-name">提醒名称</label>
+                    <input type="text" id="input-name" placeholder="如：上班打卡" required maxlength="30">
+                </div>
+
+                <div class="form-group">
+                    <label for="input-time">提醒时间</label>
+                    <input type="time" id="input-time" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-type">提醒类型</label>
+                    <select id="input-type">
+                        <option value="workday">📅 工作日提醒（周一至周五）</option>
+                        <option value="daily">🔄 每天提醒（含周末）</option>
+                        <option value="monthly">📆 月末提醒</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="monthly-day-group" style="display:none;">
+                    <label for="input-day">月末日期</label>
+                    <input type="number" id="input-day" min="1" max="31" value="30" placeholder="30">
+                </div>
+
+                <div class="form-group">
+                    <label for="input-message">提醒内容（可选）</label>
+                    <input type="text" id="input-message" placeholder="如：别忘了打卡！" maxlength="50">
+                </div>
+
+                <div class="form-group">
+                    <label for="input-count">提醒次数</label>
+                    <select id="input-count">
+                        <option value="1">1 次</option>
+                        <option value="3" selected>3 次（间隔1分钟）</option>
+                        <option value="5">5 次（间隔1分钟）</option>
+                        <option value="10">10 次（间隔1分钟）</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="btn-delete" class="btn btn-danger hidden">删除</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,455 @@
+/* === 基础重置 === */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary: #4F46E5;
+    --primary-light: #818CF8;
+    --primary-dark: #3730A3;
+    --danger: #EF4444;
+    --danger-dark: #DC2626;
+    --bg: #F3F4F6;
+    --card-bg: #FFFFFF;
+    --text: #1F2937;
+    --text-secondary: #6B7280;
+    --border: #E5E7EB;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --radius: 12px;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* === 头部 === */
+.header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 24px 20px 20px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    font-size: 0.8rem;
+    opacity: 0.85;
+    margin-top: 4px;
+}
+
+/* === 权限提示横幅 === */
+.perm-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FEF3C7;
+    color: #92400E;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #FDE68A;
+}
+
+/* === 通知指引 === */
+.notif-guide {
+    background: #EFF6FF;
+    color: #1E40AF;
+    padding: 14px 16px;
+    border-bottom: 1px solid #BFDBFE;
+    font-size: 0.85rem;
+}
+
+.guide-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.guide-steps {
+    padding-left: 20px;
+    line-height: 1.8;
+}
+
+.guide-dismiss {
+    margin-top: 10px;
+    background: #3B82F6;
+}
+
+.btn-small {
+    background: #F59E0B;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+/* === 区块 === */
+.section {
+    padding: 16px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.section-header h2 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.badge {
+    background: var(--primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* === 空状态 === */
+.empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state p:first-child {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.empty-hint {
+    font-size: 0.85rem;
+}
+
+/* === 提醒卡片 === */
+.reminder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.reminder-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+}
+
+.reminder-card:active {
+    transform: scale(0.98);
+}
+
+.reminder-card.disabled {
+    opacity: 0.5;
+}
+
+.card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.card-icon.workday { background: #EEF2FF; }
+.card-icon.daily   { background: #ECFDF5; }
+.card-icon.monthly { background: #FFF7ED; }
+
+.card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+.card-time {
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.82rem;
+}
+
+.card-type-tag {
+    background: var(--bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+}
+
+/* 开关 */
+.toggle-wrap {
+    flex-shrink: 0;
+}
+
+.toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: #D1D5DB;
+    border-radius: 12px;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.toggle:checked {
+    background: var(--primary);
+}
+
+.toggle::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.toggle:checked::before {
+    transform: translateX(20px);
+}
+
+/* === 浮动添加按钮 === */
+.fab {
+    position: fixed;
+    bottom: 80px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    font-size: 1.6rem;
+    border: none;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 50;
+}
+
+.fab:active {
+    transform: scale(0.9);
+}
+
+/* === 底部状态栏 === */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border);
+    padding: 10px 16px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    z-index: 40;
+}
+
+/* === 弹窗 === */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal {
+    background: var(--card-bg);
+    width: 100%;
+    max-width: 480px;
+    border-radius: 20px 20px 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+    animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--primary);
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 8px;
+}
+
+.btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn:active { opacity: 0.8; }
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+    flex: 0.5;
+}
+
+/* === 工具类 === */
+.hidden { display: none !important; }
+
+/* === 动画 === */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* === 桌面端适配 === */
+@media (min-width: 480px) {
+    #app {
+        max-width: 480px;
+        margin: 0 auto;
+        box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        min-height: 100vh;
+    }
+    .footer {
+        max-width: 480px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .modal-overlay {
+        align-items: center;
+    }
+    .modal {
+        border-radius: 20px;
+        margin: 20px;
+    }
+}
