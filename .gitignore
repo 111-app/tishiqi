@@ -15,6 +15,9 @@ stop.bat
 # Build outputs
 tishiqi.apk
 tishiqi-android.zip
+tishiqi-android-webview.zip
+tishiqi-unsigned.apk
+signing.keystore
 .vercel-tmp/
 
 # Screenshots
