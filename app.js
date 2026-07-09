@@ -182,7 +182,7 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') showToast('✅ 已添加到桌面');
+                if (outcome === 'accepted') showToast('✅ 已添加到主屏幕，可在应用列表中找到');
                 deferredPrompt = null;
                 banner.remove();
             } else {
@@ -407,6 +407,11 @@
 
         // 通知权限按钮
         document.getElementById('btn-enable-notif').addEventListener('click', requestNotificationPermission);
+
+        // 通知指引关闭按钮
+        document.getElementById('btn-dismiss-guide').addEventListener('click', () => {
+            document.getElementById('notif-guide').classList.add('hidden');
+        });
 
         // 类型切换 → 显示/隐藏月末日期
         document.getElementById('input-type').addEventListener('change', (e) => {
