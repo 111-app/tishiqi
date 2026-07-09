@@ -155,29 +155,49 @@
 
     function showInstallBanner() {
         let banner = document.getElementById('install-banner');
-        if (!banner) {
-            banner = document.createElement('div');
-            banner.id = 'install-banner';
-            banner.className = 'perm-banner';
-            banner.style.background = '#ECFDF5';
-            banner.style.color = '#065F46';
-            banner.style.borderBottom = '1px solid #A7F3D0';
-            banner.innerHTML = `
+        if (banner) return;
+
+        banner = document.createElement('div');
+        banner.id = 'install-banner';
+        banner.className = 'perm-banner';
+        banner.style.background = '#ECFDF5';
+        banner.style.color = '#065F46';
+        banner.style.borderBottom = '1px solid #A7F3D0';
+        banner.innerHTML = `
+            <div style="flex:1;">
                 <span>📲 添加到手机桌面，随时收到提醒</span>
-                <button class="btn-small" style="background:#10B981" id="btn-install">安装</button>
-            `;
-            const header = document.querySelector('.header');
-            header.parentNode.insertBefore(banner, header.nextSibling);
-            document.getElementById('btn-install').addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') showToast('✅ 已添加到桌面');
-                    deferredPrompt = null;
-                    banner.remove();
-                }
-            });
-        }
+                <div id="install-manual" class="hidden" style="font-size:0.8rem;margin-top:4px;color:#047857;">
+                    请点浏览器菜单 ⋮ →「添加到主屏幕」
+                </div>
+            </div>
+            <button class="btn-small" style="background:#10B981" id="btn-install">安装</button>
+        `;
+        const header = document.querySelector('.header');
+        header.parentNode.insertBefore(banner, header.nextSibling);
+
+        const btnInstall = document.getElementById('btn-install');
+        const manualText = document.getElementById('install-manual');
+
+        btnInstall.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') showToast('✅ 已添加到桌面');
+                deferredPrompt = null;
+                banner.remove();
+            } else {
+                // 浏览器没给安装弹窗，显示手动指引
+                manualText.classList.remove('hidden');
+                showToast('请用浏览器菜单「添加到主屏幕」');
+            }
+        });
+
+        // 3秒后如果没触发自动安装提示，显示手动指引
+        setTimeout(() => {
+            if (!deferredPrompt && document.getElementById('install-banner')) {
+                manualText.classList.remove('hidden');
+            }
+        }, 3000);
     }
 
     function sendNotification(title, body) {
