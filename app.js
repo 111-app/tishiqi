@@ -503,8 +503,9 @@
     // ---- Service Worker 注册 ----
     function registerSW() {
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {
-                console.log('SW 注册失败，不影响基本功能');
+            const scope = location.pathname.replace(/[^/]*$/, ''); // 当前目录作为 scope
+            navigator.serviceWorker.register('sw.js', { scope: scope }).catch((err) => {
+                console.log('SW 注册失败：', err);
             });
         }
     }
