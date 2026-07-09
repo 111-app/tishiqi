@@ -2,9 +2,9 @@
     "name": "提示气",
     "short_name": "提示气",
     "description": "你的贴心提醒小助手",
-    "id": "/tishiqi/",
-    "start_url": "/tishiqi/",
-    "scope": "/tishiqi/",
+    "id": "https://111-app.github.io/tishiqi/",
+    "start_url": "https://111-app.github.io/tishiqi/",
+    "scope": "https://111-app.github.io/tishiqi/",
     "display": "standalone",
     "orientation": "portrait",
     "theme_color": "#4F46E5",
@@ -14,13 +14,13 @@
     "categories": ["productivity", "utilities"],
     "icons": [
         {
-            "src": "/tishiqi/icon-192.png",
+            "src": "https://111-app.github.io/tishiqi/icon-192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "/tishiqi/icon-512.png",
+            "src": "https://111-app.github.io/tishiqi/icon-512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"

@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Desktop reminder legacy files
+config.json
+reminder.py
+reminder.log
+start.vbs
+install.bat
+stop.bat
+
+# Build outputs
+tishiqi.apk
+tishiqi-android.zip
+.vercel-tmp/
+
+# Screenshots
+pwabuilder-download*.png
