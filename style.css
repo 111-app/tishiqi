@@ -453,3 +453,47 @@ body {
         margin: 20px;
     }
 }
+
+/* ===== 启动覆盖层 ===== */
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.splash-content {
+    text-align: center;
+    animation: splash-fade-in 0.5s ease;
+}
+
+.splash-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: splash-pulse 2s ease-in-out infinite;
+}
+
+.splash-hint {
+    color: #fff;
+    font-size: 18px;
+    opacity: 0.9;
+    letter-spacing: 2px;
+}
+
+@keyframes splash-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+@keyframes splash-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

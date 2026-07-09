@@ -1,5 +1,5 @@
 // 提示气 - Service Worker
-const CACHE_NAME = 'tishiqi-v3';
+const CACHE_NAME = 'tishiqi-v4';
 const ASSETS = [
     'https://111-app.github.io/tishiqi/',
     'https://111-app.github.io/tishiqi/index.html',

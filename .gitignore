@@ -12,6 +12,10 @@ start.vbs
 install.bat
 stop.bat
 
+# Temp extracted sources
+_android_src/
+_android_src2/
+
 # Build outputs
 tishiqi.apk
 tishiqi-android.zip

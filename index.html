@@ -13,6 +13,14 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- 启动覆盖层：点击闹钟图标进入 -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <div class="splash-icon">⏰</div>
+            <p class="splash-hint">点击进入</p>
+        </div>
+    </div>
+
     <div id="app">
         <!-- 顶部标题栏 -->
         <header class="header">
@@ -118,5 +126,16 @@
     </div>
 
     <script src="app.js"></script>
+    <script>
+        // 启动覆盖层：点击后进入功能页面
+        (function() {
+            var splash = document.getElementById('splash-screen');
+            if (splash) {
+                splash.addEventListener('click', function() {
+                    splash.style.display = 'none';
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
