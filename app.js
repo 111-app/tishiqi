@@ -8,7 +8,7 @@
     // ---- 常量 ----
     const STORAGE_KEY = 'tiShiQi_reminders';
     const FIRED_KEY = 'tiShiQi_fired';
-    const CHECK_INTERVAL = 30 * 1000; // 30秒检查一次
+    const CHECK_INTERVAL = 10 * 1000; // 10秒检查一次
     const TYPE_MAP = {
         workday: { label: '工作日', icon: '📅' },
         daily:   { label: '每天',   icon: '🔄' },
@@ -200,21 +200,111 @@
         }, 3000);
     }
 
-    function sendNotification(title, body) {
-        if (!checkNotificationPermission()) return;
+    // ---- WebView 检测 ----
+    function isWebView() {
+        return /Android.*wv|WebView/i.test(navigator.userAgent) || !('serviceWorker' in navigator);
+    }
+
+    // ---- 声音报警（Web Audio API，WebView 中有效）----
+    function playAlarmSound() {
         try {
-            const notif = new Notification(title, {
-                body: body,
-                icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⏰</text></svg>',
-                badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⏰</text></svg>',
-                tag: 'tishiqi-' + title + '-' + Date.now(),
-                requireInteraction: false,
-            });
-            // 8秒后自动关闭
-            setTimeout(() => notif.close(), 8000);
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            // 播放3声短促的提示音
+            for (var i = 0; i < 3; i++) {
+                var osc = ctx.createOscillator();
+                var gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = 880; // A5 音
+                osc.type = 'sine';
+                gain.gain.value = 0.5;
+                var startTime = ctx.currentTime + i * 0.4;
+                osc.start(startTime);
+                osc.stop(startTime + 0.3);
+            }
         } catch (e) {
-            console.warn('通知发送失败:', e);
+            console.warn('声音播放失败:', e);
         }
+    }
+
+    // ---- 震动报警 ----
+    function vibrateDevice() {
+        try {
+            if (navigator.vibrate) {
+                // 震动模式：震-停-震-停-震
+                navigator.vibrate([500, 200, 500, 200, 500]);
+            }
+        } catch (e) {
+            console.warn('震动失败:', e);
+        }
+    }
+
+    // ---- 视觉弹窗覆盖层（WebView 中最有效的提醒方式）----
+    function showAlertOverlay(title, body) {
+        // 移除已有的弹窗
+        var existing = document.getElementById('alert-overlay');
+        if (existing) existing.remove();
+
+        var overlay = document.createElement('div');
+        overlay.id = 'alert-overlay';
+        overlay.style.cssText = [
+            'position:fixed;top:0;left:0;width:100%;height:100%',
+            'background:rgba(0,0,0,0.85);z-index:999999',
+            'display:flex;align-items:center;justify-content:center',
+            'flex-direction:column;color:#fff;text-align:center',
+            'padding:20px;animation:alertPulse 1s ease-in-out infinite alternate'
+        ].join(';');
+        overlay.innerHTML = [
+            '<div style="font-size:80px;margin-bottom:20px">⏰</div>',
+            '<div style="font-size:24px;font-weight:bold;margin-bottom:12px">' + title + '</div>',
+            '<div style="font-size:16px;opacity:0.9;margin-bottom:30px">' + body + '</div>',
+            '<button onclick="this.parentElement.remove()" style="',
+            'background:#4F46E5;color:#fff;border:none;padding:14px 40px',
+            ';font-size:18px;border-radius:12px;cursor:pointer',
+            '">我知道了</button>'
+        ].join('');
+        document.body.appendChild(overlay);
+
+        // 添加CSS动画
+        if (!document.getElementById('alert-style')) {
+            var style = document.createElement('style');
+            style.id = 'alert-style';
+            style.textContent = '@keyframes alertPulse{from{background:rgba(79,70,229,0.9)}to{background:rgba(220,38,38,0.9)}}';
+            document.head.appendChild(style);
+        }
+
+        // 30秒后自动关闭
+        setTimeout(function() {
+            if (overlay.parentElement) overlay.remove();
+        }, 30000);
+    }
+
+    function sendNotification(title, body) {
+        // 1. 始终播放声音和震动（在 WebView 和浏览器中都有效）
+        playAlarmSound();
+        vibrateDevice();
+
+        // 2. 显示视觉弹窗覆盖层（WebView 中最有效的提醒方式）
+        showAlertOverlay(title, body);
+
+        // 3. 尝试浏览器原生通知（Chrome 等浏览器中有效）
+        if (checkNotificationPermission()) {
+            try {
+                var notif = new Notification(title, {
+                    body: body,
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⏰</text></svg>',
+                    badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⏰</text></svg>',
+                    tag: 'tishiqi-' + title + '-' + Date.now(),
+                    requireInteraction: false,
+                });
+                setTimeout(function() { notif.close(); }, 8000);
+            } catch (e) {
+                console.warn('浏览器通知发送失败:', e);
+            }
+        }
+
+        // 4. 输出到 console（为原生通知桥接预留）
+        console.log('NOTIF:' + JSON.stringify({title: title, body: body}));
     }
 
     // ---- Toast 提示 ----
@@ -302,8 +392,9 @@
 
         // 更新状态栏
         const statusEl = document.getElementById('status-text');
-        const activeCount = list.filter(r => r.enabled).length;
-        statusEl.textContent = `🟢 运行中 · ${timeStr} · ${activeCount}个提醒已启用`;
+        var activeCount = list.filter(r => r.enabled).length;
+        var webViewTag = isWebView() ? ' 📱APP模式' : '';
+        statusEl.textContent = '🟢 运行中 · ' + timeStr + ' · ' + activeCount + '个提醒已启用' + webViewTag;
     }
 
     // ---- 渲染列表 ----
@@ -496,11 +587,18 @@
 
     // ---- 页面可见性变化时重新检查 ----
     function initVisibilityCheck() {
-        document.addEventListener('visibilitychange', () => {
+        document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
                 renderList();
                 updatePermBanner();
+                // APP 回到前台时，密集检查 5 次（每隔 2 秒）
                 checkReminders();
+                var count = 0;
+                var burstTimer = setInterval(function() {
+                    checkReminders();
+                    count++;
+                    if (count >= 4) clearInterval(burstTimer);
+                }, 2000);
             }
         });
     }
