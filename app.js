@@ -205,28 +205,6 @@
         return /Android.*wv|WebView/i.test(navigator.userAgent) || !('serviceWorker' in navigator);
     }
 
-    // ---- 声音报警（Web Audio API，WebView 中有效）----
-    function playAlarmSound() {
-        try {
-            var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            // 播放3声短促的提示音
-            for (var i = 0; i < 3; i++) {
-                var osc = ctx.createOscillator();
-                var gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.frequency.value = 880; // A5 音
-                osc.type = 'sine';
-                gain.gain.value = 0.5;
-                var startTime = ctx.currentTime + i * 0.4;
-                osc.start(startTime);
-                osc.stop(startTime + 0.3);
-            }
-        } catch (e) {
-            console.warn('声音播放失败:', e);
-        }
-    }
-
     // ---- 震动报警 ----
     function vibrateDevice() {
         try {
@@ -236,6 +214,45 @@
             }
         } catch (e) {
             console.warn('震动失败:', e);
+        }
+    }
+
+    // ---- 原生闹钟桥接（Android AlarmManager）----
+    function scheduleNativeAlarms() {
+        if (typeof Android === 'undefined' || !Android.scheduleAlarm) return;
+        try {
+            var list = loadReminders().filter(function(r) { return r.enabled; });
+            // 先取消所有旧闹钟
+            list.forEach(function(r, i) {
+                Android.cancelAlarm(i);
+            });
+            // 为每个启用的提醒调度下一个触发时间
+            var now = new Date();
+            list.forEach(function(r, i) {
+                var parts = r.time.split(':').map(Number);
+                var target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parts[0], parts[1], 0, 0);
+                // 如果今天的时间已过，调度到明天
+                if (target.getTime() <= now.getTime()) {
+                    target.setDate(target.getDate() + 1);
+                }
+                var title = '⏰ ' + r.name;
+                var body = r.message || r.name;
+                Android.scheduleAlarm(i, title, body, target.getTime());
+                console.log('调度闹钟[' + i + ']: ' + r.name + ' -> ' + target.toLocaleString());
+            });
+        } catch (e) {
+            console.warn('调度原生闹钟失败:', e);
+        }
+    }
+
+    function cancelAllNativeAlarms() {
+        if (typeof Android === 'undefined' || !Android.cancelAlarm) return;
+        try {
+            for (var i = 0; i < 50; i++) {
+                Android.cancelAlarm(i);
+            }
+        } catch (e) {
+            console.warn('取消原生闹钟失败:', e);
         }
     }
 
@@ -280,8 +297,7 @@
     }
 
     function sendNotification(title, body) {
-        // 1. 始终播放声音和震动（在 WebView 和浏览器中都有效）
-        playAlarmSound();
+        // 1. 震动 + 全屏弹窗（WebView 中最有效的提醒方式）
         vibrateDevice();
 
         // 2. 显示视觉弹窗覆盖层（WebView 中最有效的提醒方式）
@@ -542,6 +558,8 @@
             saveReminders(list);
             renderList();
             closeModal();
+            // 调度原生闹钟
+            scheduleNativeAlarms();
         });
 
         // 删除按钮
@@ -554,6 +572,8 @@
             renderList();
             closeModal();
             showToast('🗑️ 已删除');
+            // 重新调度原生闹钟
+            scheduleNativeAlarms();
         });
 
         // 列表点击事件（委托）
@@ -570,6 +590,8 @@
                     saveReminders(list);
                     renderList();
                     showToast(item.enabled ? '✅ 已启用' : '⏸️ 已暂停');
+                    // 重新调度原生闹钟
+                    scheduleNativeAlarms();
                 }
                 return;
             }
@@ -627,6 +649,15 @@
 
         // 定时检查
         setInterval(checkReminders, CHECK_INTERVAL);
+
+        // 定义原生回调（供 Android 端调用）
+        window._nativeAlert = function(title, body) {
+            vibrateDevice();
+            showAlertOverlay(title, body);
+        };
+
+        // 调度原生闹钟
+        scheduleNativeAlarms();
 
         // 请求通知权限提示
         if (isSecureContext() && 'Notification' in window && Notification.permission === 'default') {
